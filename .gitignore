@@ -11,3 +11,6 @@ step1x3d_texture/differentiable_renderer/dist
 step1x3d_texture/differentiable_renderer/mesh_processor.egg-info
 *.png
 data/
+examples/
+.vscode/
+AGENTS.md
