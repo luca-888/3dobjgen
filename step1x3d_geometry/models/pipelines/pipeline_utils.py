@@ -54,7 +54,7 @@ def preprocess_image(
                 image = rembg.remove(
                     image,
                     session=rembg.new_session(
-                        model_name="bria",
+                        model_name="u2net",
                         providers=[
                             (
                                 "CUDAExecutionProvider",

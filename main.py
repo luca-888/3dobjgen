@@ -75,32 +75,32 @@ def export_mesh(mesh: "trimesh.Trimesh", output_path: str, output_format: Option
     raise ValueError(f"Unsupported export format: {fmt}")
 
 
-def run_background_removal_stage(input_image_path: str, rembg_backend: str, use_rembg_cache: bool) -> PIL.Image.Image:
-    """
-    Run rembg-based background removal and preprocessing as a standalone stage.
-    """
-    if not input_image_path:
-        raise ValueError("input_image_path must be provided for background removal.")
-    stage_start = time.perf_counter()
-    with PIL.Image.open(input_image_path) as image:
-        source = image.convert("RGBA")
-    processed = preprocess_image(
-        source,
-        force=False,
-        background_color=[255, 255, 255],
-        foreground_ratio=0.95,
-        rembg_backend=rembg_backend,
-        use_rembg_cache=use_rembg_cache,
-    )
-    logger.info("Background removal finished in %.2fs", time.perf_counter() - stage_start)
-    return processed
+# def run_background_removal_stage(input_image_path: str, rembg_backend: str, use_rembg_cache: bool) -> PIL.Image.Image:
+#     """
+#     Run rembg-based background removal and preprocessing as a standalone stage.
+#     """
+#     if not input_image_path:
+#         raise ValueError("input_image_path must be provided for background removal.")
+#     stage_start = time.perf_counter()
+#     with PIL.Image.open(input_image_path) as image:
+#         source = image.convert("RGBA")
+#     processed = preprocess_image(
+#         source,
+#         force=False,
+#         background_color=[255, 255, 255],
+#         foreground_ratio=0.95,
+#         rembg_backend=rembg_backend,
+#         use_rembg_cache=use_rembg_cache,
+#     )
+#     logger.info("Background removal finished in %.2fs", time.perf_counter() - stage_start)
+#     return processed
 
 
 def run_geometry_model_stage(
     input_image: Union[str, PIL.Image.Image],
-    rembg_backend: str,
-    preprocess_in_pipeline: bool,
-    use_rembg_cache: bool,
+    # rembg_backend: str,
+    # preprocess_in_pipeline: bool,
+    # use_rembg_cache: bool,
 ) -> tuple["trimesh.Trimesh", Union[str, torch.device]]:
     """
     Run the Step1X model and return the raw mesh as well as the pipeline device.
@@ -117,9 +117,9 @@ def run_geometry_model_stage(
         guidance_scale=7.5,
         num_inference_steps=50,
         generator=generator,
-        rembg_backend=rembg_backend,
-        preprocess_input=preprocess_in_pipeline,
-        use_rembg_cache=use_rembg_cache,
+        # rembg_backend=rembg_backend,
+        # preprocess_input=preprocess_in_pipeline,
+        # use_rembg_cache=use_rembg_cache,
     )
     duration = time.perf_counter() - stage_start
     logger.info("Geometry model stage finished in %.2fs", duration)
@@ -506,23 +506,23 @@ if __name__ == "__main__":
     )
     try:
         processed_input: Union[str, PIL.Image.Image] = args.input
-        preprocess_in_pipeline = True
-        use_rembg_cache = not args.disable_rembg_cache
-        if not args.disable_rembg:
-            with memory_monitor.track("Stage: background removal"):
-                processed_input = run_background_removal_stage(
-                    input_image_path=args.input,
-                    rembg_backend=args.rembg_backend,
-                    use_rembg_cache=use_rembg_cache,
-                )
-            preprocess_in_pipeline = False
+        # preprocess_in_pipeline = True
+        # use_rembg_cache = not args.disable_rembg_cache
+        # if not args.disable_rembg:
+        #     with memory_monitor.track("Stage: background removal"):
+        #         processed_input = run_background_removal_stage(
+        #             input_image_path=args.input,
+        #             rembg_backend=args.rembg_backend,
+        #             use_rembg_cache=use_rembg_cache,
+        #         )
+        #     preprocess_in_pipeline = False
 
         with memory_monitor.track("Stage: geometry model"):
             mesh, pipeline_device = run_geometry_model_stage(
                 input_image=processed_input,
-                rembg_backend=args.rembg_backend,
-                preprocess_in_pipeline=preprocess_in_pipeline,
-                use_rembg_cache=use_rembg_cache,
+                # rembg_backend=args.rembg_backend,
+                # preprocess_in_pipeline=preprocess_in_pipeline,
+                # use_rembg_cache=use_rembg_cache,
             )
         log_mesh_stats(mesh, "Mesh from geometry model")
 
