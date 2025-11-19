@@ -354,7 +354,8 @@ class Step1X3DTexturePipeline:
             remove_bg_fn = None
 
         if isinstance(mesh, trimesh.Scene):
-            mesh = mesh.to_geometry()
+            mesh = mesh.dump(concatenate=True)  # 最稳的方法
+            # mesh = mesh.to_geometry()
 
         # multi-view generation pipeline
         images, pos_images, normal_images, reference_image, textured_mesh, mesh_bp = (
